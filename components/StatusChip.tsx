@@ -1,11 +1,11 @@
 import type { Tone } from "@/lib/finance";
 
 export const TONE: Record<Tone, { bg: string; fg: string; dot: string }> = {
-  pos: { bg: "#e6f4ea", fg: "#137333", dot: "#188038" },
-  warn: { bg: "#fef7e0", fg: "#a35200", dot: "#e37400" },
-  neg: { bg: "#fce8e6", fg: "#c5221f", dot: "#d93025" },
-  info: { bg: "#f3e8fd", fg: "#7c1fd1", dot: "#9334e6" },
-  neutral: { bg: "#f1f3f4", fg: "#5f6368", dot: "#80868b" },
+  pos: { bg: "#e7f4ea", fg: "#0a7d2c", dot: "#0a7d2c" },
+  warn: { bg: "#f9f0df", fg: "#9a5b00", dot: "#b25e00" },
+  neg: { bg: "#fdeceb", fg: "#c8281c", dot: "#d93025" },
+  info: { bg: "#efeaff", fg: "#6a3fd6", dot: "#7c5cff" },
+  neutral: { bg: "#f4f4f5", fg: "#5c5c5c", dot: "#b3b3b8" },
 };
 
 export function StatusChip({

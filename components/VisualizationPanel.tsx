@@ -41,20 +41,22 @@ const DATASETS: { key: DataKey; label: string; sub: string; icon: any }[] = [
 function ChartTip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-line bg-surface px-3 py-2 text-[12px] shadow-pop">
-      {label && <p className="mb-1 font-semibold text-ink">{label}</p>}
+    <div className="rounded-lg border border-line bg-white px-3 py-2 text-[12px] shadow-pop">
+      {label && <p className="num mb-1 font-semibold text-ink">{label}</p>}
       {payload
         .filter((p: any) => (p.value ?? 0) > 0)
         .map((p: any) => (
           <div key={p.name} className="flex items-center gap-2">
             <span className="h-2.5 w-2.5 rounded-sm" style={{ background: p.color || p.fill || p.stroke }} />
-            <span className="text-ink-mute">{p.name}</span>
-            <span className="ml-auto font-semibold text-ink tnum">{rupee(p.value)}</span>
+            <span className="text-ink-2">{p.name}</span>
+            <span className="num ml-auto font-semibold text-ink">{rupee(p.value)}</span>
           </div>
         ))}
     </div>
   );
 }
+
+const AXIS = { tickLine: false, tick: { fontSize: 11 }, axisLine: { stroke: "#e3e3e3" } } as const;
 
 export function VisualizationPanel({ model }: { model: Model }) {
   const [data, setData] = useState<DataKey>("lender");
@@ -73,7 +75,6 @@ export function VisualizationPanel({ model }: { model: Model }) {
           count: l.remainingCount,
           amount: l.remainingAmount,
           share: model.totalRemaining ? l.remainingAmount / model.totalRemaining : 0,
-          payoff: l.payoffDate,
         }))
         .sort((a, b) => b.amount - a.amount),
     [active, model.totalRemaining],
@@ -83,15 +84,16 @@ export function VisualizationPanel({ model }: { model: Model }) {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.05 }}
-      className="card p-5"
+      className="panel p-5"
     >
-      <div className="flex flex-col gap-3 border-b border-line-soft pb-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-line pb-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h2 className="font-display text-base font-bold text-ink">Repayment analytics</h2>
-          <p className="mt-0.5 text-[13px] text-ink-mute">{meta.sub}</p>
+          <p className="eyebrow">Analytics</p>
+          <h2 className="mt-1 font-display text-[15px] font-bold text-ink">{meta.label}</h2>
+          <p className="mt-0.5 text-[12.5px] text-ink-3">{meta.sub}</p>
         </div>
         <Segmented
           value={mode}
@@ -128,7 +130,6 @@ export function VisualizationPanel({ model }: { model: Model }) {
   );
 }
 
-/* ───────────────────────── charts ───────────────────────── */
 function Charts({
   data,
   model,
@@ -144,12 +145,12 @@ function Charts({
     return (
       <div className="h-[300px] w-full sm:h-[340px]">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={lenderRows} margin={{ top: 8, right: 8, left: -6, bottom: 0 }} barCategoryGap="30%">
-            <CartesianGrid vertical={false} stroke="#eceef1" />
-            <XAxis dataKey="name" tickLine={false} axisLine={{ stroke: "#dadce0" }} interval={0} tick={{ fontSize: 11 }} />
-            <YAxis tickFormatter={(v) => rupeeShort(v)} tickLine={false} axisLine={false} width={56} />
-            <Tooltip cursor={{ fill: "#f1f3f4" }} content={<ChartTip />} />
-            <Bar dataKey="amount" name="Outstanding" radius={[8, 8, 0, 0]} maxBarSize={70}>
+          <BarChart data={lenderRows} margin={{ top: 8, right: 8, left: -6, bottom: 0 }} barCategoryGap="32%">
+            <CartesianGrid vertical={false} stroke="#f0f0f0" />
+            <XAxis dataKey="name" interval={0} {...AXIS} />
+            <YAxis tickFormatter={(v) => rupeeShort(v)} width={56} tickLine={false} axisLine={false} />
+            <Tooltip cursor={{ fill: "#f6f6f6" }} content={<ChartTip />} />
+            <Bar dataKey="amount" name="Outstanding" radius={[6, 6, 0, 0]} maxBarSize={68}>
               {lenderRows.map((d) => (
                 <Cell key={d.id} fill={d.color} />
               ))}
@@ -168,14 +169,14 @@ function Charts({
             <defs>
               {model.loans.map((l) => (
                 <linearGradient key={l.loan.id} id={`v-${l.loan.id}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={l.loan.color} stopOpacity={0.55} />
-                  <stop offset="100%" stopColor={l.loan.color} stopOpacity={0.08} />
+                  <stop offset="0%" stopColor={l.loan.color} stopOpacity={0.5} />
+                  <stop offset="100%" stopColor={l.loan.color} stopOpacity={0.06} />
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid vertical={false} stroke="#eceef1" />
-            <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "#dadce0" }} interval="preserveStartEnd" minTickGap={26} tick={{ fontSize: 11 }} />
-            <YAxis tickFormatter={(v) => rupeeShort(v)} tickLine={false} axisLine={false} width={56} />
+            <CartesianGrid vertical={false} stroke="#f0f0f0" />
+            <XAxis dataKey="label" interval="preserveStartEnd" minTickGap={26} {...AXIS} />
+            <YAxis tickFormatter={(v) => rupeeShort(v)} width={56} tickLine={false} axisLine={false} />
             <Tooltip content={<ChartTip />} />
             {model.loans.map((l) => (
               <Area
@@ -185,7 +186,7 @@ function Charts({
                 name={l.loan.name}
                 stackId="1"
                 stroke={l.loan.color}
-                strokeWidth={1.5}
+                strokeWidth={1.4}
                 fill={`url(#v-${l.loan.id})`}
               />
             ))}
@@ -202,29 +203,28 @@ function Charts({
           <AreaChart data={timeline} margin={{ top: 8, right: 8, left: -6, bottom: 0 }}>
             <defs>
               <linearGradient id="v-paydown" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#1a73e8" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#1a73e8" stopOpacity={0.03} />
+                <stop offset="0%" stopColor="#2f5bff" stopOpacity={0.28} />
+                <stop offset="100%" stopColor="#2f5bff" stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} stroke="#eceef1" />
-            <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: "#dadce0" }} interval="preserveStartEnd" minTickGap={26} tick={{ fontSize: 11 }} />
-            <YAxis tickFormatter={(v) => rupeeShort(v)} tickLine={false} axisLine={false} width={56} />
+            <CartesianGrid vertical={false} stroke="#f0f0f0" />
+            <XAxis dataKey="label" interval="preserveStartEnd" minTickGap={26} {...AXIS} />
+            <YAxis tickFormatter={(v) => rupeeShort(v)} width={56} tickLine={false} axisLine={false} />
             <Tooltip content={<ChartTip />} />
-            <Area type="monotone" dataKey="cumulativeRemaining" name="Remaining balance" stroke="#1a73e8" strokeWidth={2.5} fill="url(#v-paydown)" />
+            <Area type="monotone" dataKey="cumulativeRemaining" name="Remaining balance" stroke="#2f5bff" strokeWidth={2.5} fill="url(#v-paydown)" />
           </AreaChart>
         </ResponsiveContainer>
       </div>
     );
   }
 
-  // split donut
   return (
     <div className="flex flex-col items-center gap-6 sm:flex-row">
       <div className="relative h-[260px] w-full sm:h-[300px] sm:w-1/2">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Tooltip content={<ChartTip />} />
-            <Pie data={lenderRows} dataKey="amount" nameKey="name" cx="50%" cy="50%" innerRadius="60%" outerRadius="86%" paddingAngle={2} stroke="#fff" strokeWidth={2}>
+            <Pie data={lenderRows} dataKey="amount" nameKey="name" cx="50%" cy="50%" innerRadius="62%" outerRadius="88%" paddingAngle={2} stroke="#fff" strokeWidth={2}>
               {lenderRows.map((d) => (
                 <Cell key={d.id} fill={d.color} />
               ))}
@@ -233,18 +233,18 @@ function Charts({
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 grid place-items-center">
           <div className="text-center">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-ink-faint">Total</p>
-            <p className="font-display text-xl font-bold text-ink tnum">{rupeeShort(model.totalRemaining)}</p>
+            <p className="eyebrow">Total</p>
+            <p className="num font-display text-[19px] font-bold text-ink">{rupeeShort(model.totalRemaining)}</p>
           </div>
         </div>
       </div>
       <div className="w-full space-y-2 sm:w-1/2">
         {lenderRows.map((d) => (
-          <div key={d.id} className="flex items-center gap-3 rounded-xl border border-line-soft px-3 py-2">
+          <div key={d.id} className="flex items-center gap-3 rounded-xl border border-line px-3 py-2">
             <span className="h-3 w-3 rounded-sm" style={{ background: d.color }} />
-            <span className="text-[13px] font-medium text-ink-soft">{d.name}</span>
-            <span className="ml-auto text-[13px] font-semibold text-ink tnum">{rupee(d.amount)}</span>
-            <span className="w-11 text-right text-[12px] text-ink-mute tnum">{Math.round(d.share * 100)}%</span>
+            <span className="text-[13px] font-medium text-ink">{d.name}</span>
+            <span className="num ml-auto text-[13px] font-semibold text-ink">{rupee(d.amount)}</span>
+            <span className="num w-11 text-right text-[12px] text-ink-3">{Math.round(d.share * 100)}%</span>
           </div>
         ))}
       </div>
@@ -252,7 +252,6 @@ function Charts({
   );
 }
 
-/* ───────────────────────── tables ───────────────────────── */
 function Tables({
   data,
   model,
@@ -292,16 +291,14 @@ function Tables({
                 <td className="num">{Math.round(d.share * 100)}%</td>
               </tr>
             ))}
-          </tbody>
-          <tfoot>
             <tr>
-              <td className="border-t border-line pt-3 font-semibold text-ink">Total</td>
-              <td className="num border-t border-line pt-3 font-semibold text-ink">{rupee(model.monthlyOutflow)}</td>
-              <td className="num border-t border-line pt-3 font-semibold text-ink">{model.totalRemainingInstallments}</td>
-              <td className="num border-t border-line pt-3 font-semibold text-ink">{rupee(model.totalRemaining)}</td>
-              <td className="num border-t border-line pt-3 font-semibold text-ink">100%</td>
+              <td className="font-semibold text-ink">Total</td>
+              <td className="num font-semibold text-ink">{rupee(model.monthlyOutflow)}</td>
+              <td className="num font-semibold text-ink">{model.totalRemainingInstallments}</td>
+              <td className="num font-semibold text-ink">{rupee(model.totalRemaining)}</td>
+              <td className="num font-semibold text-ink">100%</td>
             </tr>
-          </tfoot>
+          </tbody>
         </table>
       </div>
     );
@@ -325,7 +322,7 @@ function Tables({
               for (const l of model.loans) if (((p[l.loan.id] as number) ?? 0) > 0) due++;
               return (
                 <tr key={p.key}>
-                  <td className="font-medium text-ink">{p.label}</td>
+                  <td className="num font-medium text-ink">{p.label}</td>
                   <td className="num">{due}</td>
                   <td className="num font-semibold text-ink">{rupee(p.total)}</td>
                   <td className="num">{rupee(Math.max(0, p.cumulativeRemaining - p.total))}</td>
@@ -338,7 +335,6 @@ function Tables({
     );
   }
 
-  // paydown table
   return (
     <div className="max-h-[360px] overflow-auto thin-scroll">
       <table className="dtable">
@@ -356,7 +352,7 @@ function Tables({
             const pct = model.totalRemaining ? Math.round((paid / model.totalRemaining) * 100) : 100;
             return (
               <tr key={p.key}>
-                <td className="font-medium text-ink">{p.label}</td>
+                <td className="num font-medium text-ink">{p.label}</td>
                 <td className="num">{rupee(Math.max(0, paid))}</td>
                 <td className="num font-semibold text-ink">{rupee(p.cumulativeRemaining)}</td>
                 <td className="num">{pct}%</td>

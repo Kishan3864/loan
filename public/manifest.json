@@ -1,32 +1,17 @@
 {
-  "name": "My EMI Dashboard",
-  "short_name": "My EMIs",
-  "description": "Personal EMI & debt-freedom tracker",
+  "name": "EMI Dashboard",
+  "short_name": "EMI",
+  "description": "Personal EMI, debt and repayment analytics",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#f6f8fc",
+  "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "categories": ["finance", "productivity"],
   "icons": [
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

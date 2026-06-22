@@ -13,3 +13,6 @@ tsconfig.tsbuildinfo
 # local dev artifacts
 dev-server.log
 shots/
+
+# runtime data store (password hash, loans, biometric credentials)
+server-data/

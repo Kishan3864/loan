@@ -1,4 +1,4 @@
-import { LOANS, Loan } from "./data";
+import { Loan } from "./data";
 
 const MS_DAY = 86400000;
 
@@ -163,12 +163,12 @@ export function buildScheduleRows(model: Model): ScheduleRow[] {
 }
 
 // ── the engine ───────────────────────────────────────────────
-export function buildModel(now: Date): Model {
+export function buildModel(now: Date, sourceLoans: Loan[]): Model {
   const today = stripTime(now);
   const curY = now.getFullYear();
   const curM = now.getMonth();
 
-  const loans: LoanComputed[] = LOANS.map((loan) => {
+  const loans: LoanComputed[] = sourceLoans.map((loan) => {
     const schedule = scheduleFor(loan);
     const payoffDate = schedule[schedule.length - 1] ?? today;
     const upcoming = schedule.filter((d) => d >= today);

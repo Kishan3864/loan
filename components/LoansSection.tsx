@@ -13,15 +13,15 @@ type View = "cards" | "table";
 type Sort = "payoff" | "amount" | "emi";
 
 function ProgressRing({ progress, color, short }: { progress: number; color: string; short: string }) {
-  const size = 52;
-  const stroke = 5;
+  const size = 50;
+  const stroke = 4.5;
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const off = c * (1 - Math.min(1, Math.max(0, progress)));
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="#e8eaed" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="#efeff1" strokeWidth={stroke} fill="none" />
         <motion.circle
           cx={size / 2}
           cy={size / 2}
@@ -36,11 +36,15 @@ function ProgressRing({ progress, color, short }: { progress: number; color: str
           transition={{ duration: 1, ease: "easeOut" }}
         />
       </svg>
-      <span className="absolute inset-0 grid place-items-center text-[11px] font-bold" style={{ color }}>
+      <span className="absolute inset-0 grid place-items-center text-[10.5px] font-bold" style={{ color }}>
         {short}
       </span>
     </div>
   );
+}
+
+function ord(n: number) {
+  return n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th";
 }
 
 function LoanCard({ l, i }: { l: LoanComputed; i: number }) {
@@ -48,10 +52,10 @@ function LoanCard({ l, i }: { l: LoanComputed; i: number }) {
   const total = l.snapshotCount || l.remainingCount;
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.04 * i, duration: 0.4 }}
-      className="card p-5 transition hover:shadow-card-hover"
+      className="panel lift p-5"
     >
       <div className="flex items-center gap-3">
         <ProgressRing progress={l.progress} color={l.loan.color} short={l.loan.short} />
@@ -60,23 +64,23 @@ function LoanCard({ l, i }: { l: LoanComputed; i: number }) {
             <p className="truncate font-display text-[15px] font-bold text-ink">{l.loan.name}</p>
             <StatusChip tone={st.tone} label={st.label} />
           </div>
-          <p className="mt-0.5 text-[12px] text-ink-mute">
-            {rupee(l.loan.emi)} / mo · due on the {l.loan.dueDay}
-            {l.loan.dueDay === 1 ? "st" : l.loan.dueDay === 2 ? "nd" : l.loan.dueDay === 3 ? "rd" : "th"}
+          <p className="num mt-0.5 text-[11.5px] text-ink-3">
+            {rupee(l.loan.emi)}/mo · due {l.loan.dueDay}
+            {ord(l.loan.dueDay)}
           </p>
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+      <div className="mt-4 grid grid-cols-3 gap-2">
         <Stat label="Outstanding" value={rupee(l.remainingAmount)} />
-        <Stat label="Installments" value={`${l.remainingCount} left`} />
+        <Stat label="Left" value={`${l.remainingCount} EMIs`} />
         <Stat label="Closes" value={fullMonth(l.payoffDate)} />
       </div>
 
       <div className="mt-4">
-        <div className="mb-1 flex justify-between text-[11px] text-ink-mute">
-          <span>{l.paidCount} of {total} paid</span>
-          <span>{l.nextDue ? `next in ${l.daysToNext}d` : "done"}</span>
+        <div className="mb-1 flex justify-between text-[11px] text-ink-3">
+          <span className="num">{l.paidCount} of {total} paid</span>
+          <span className="num">{l.nextDue ? `next in ${l.daysToNext}d` : "done"}</span>
         </div>
         <div className="bar">
           <motion.span
@@ -93,9 +97,9 @@ function LoanCard({ l, i }: { l: LoanComputed; i: number }) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl bg-canvas px-2 py-2.5">
-      <p className="text-[10px] font-medium uppercase tracking-wide text-ink-faint">{label}</p>
-      <p className="mt-0.5 text-[13px] font-bold text-ink tnum">{value}</p>
+    <div className="rounded-lg bg-paper px-2.5 py-2">
+      <p className="eyebrow !text-[9.5px]">{label}</p>
+      <p className="num mt-0.5 text-[12.5px] font-bold text-ink">{value}</p>
     </div>
   );
 }
@@ -116,10 +120,10 @@ export function LoansSection({ model }: { model: Model }) {
 
   return (
     <section>
-      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="font-display text-base font-bold text-ink">All loans</h2>
-          <p className="text-[13px] text-ink-mute">Every account with live status and payoff date</p>
+          <p className="eyebrow">Accounts</p>
+          <h2 className="mt-1 font-display text-[15px] font-bold text-ink">All loans</h2>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Segmented
@@ -150,7 +154,7 @@ export function LoansSection({ model }: { model: Model }) {
           ))}
         </div>
       ) : (
-        <div className="card overflow-x-auto thin-scroll p-0">
+        <div className="panel overflow-x-auto thin-scroll">
           <table className="dtable">
             <thead>
               <tr>
@@ -158,7 +162,7 @@ export function LoansSection({ model }: { model: Model }) {
                 <th className="num">EMI</th>
                 <th className="num">Left</th>
                 <th className="num">Outstanding</th>
-                <th>Due day</th>
+                <th className="num">Due</th>
                 <th>Next due</th>
                 <th>Closes</th>
                 <th className="num">Progress</th>
@@ -179,15 +183,15 @@ export function LoansSection({ model }: { model: Model }) {
                     <td className="num">{rupee(l.loan.emi)}</td>
                     <td className="num">{l.remainingCount}</td>
                     <td className="num font-semibold text-ink">{rupee(l.remainingAmount)}</td>
-                    <td>{l.loan.dueDay}</td>
-                    <td>{l.nextDue ? `${dateLabel(l.nextDue)} · ${l.daysToNext}d` : "—"}</td>
+                    <td className="num">{l.loan.dueDay}{ord(l.loan.dueDay)}</td>
+                    <td className="num">{l.nextDue ? `${dateLabel(l.nextDue)} · ${l.daysToNext}d` : "—"}</td>
                     <td>{fullMonth(l.payoffDate)}</td>
                     <td className="num">
                       <div className="flex items-center justify-end gap-2">
-                        <div className="bar w-16">
+                        <div className="bar w-14">
                           <span style={{ width: `${Math.round(l.progress * 100)}%`, background: l.loan.color }} />
                         </div>
-                        <span className="w-8 text-right tnum">{Math.round(l.progress * 100)}%</span>
+                        <span className="w-8 text-right">{Math.round(l.progress * 100)}%</span>
                       </div>
                     </td>
                     <td>

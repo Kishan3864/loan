@@ -35,38 +35,36 @@ export function UpcomingPayments({ model }: { model: Model }) {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 12 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.05 }}
-      className="card p-5"
+      className="panel p-5"
     >
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between border-b border-line pb-4">
         <div>
-          <h2 className="flex items-center gap-2 font-display text-base font-bold text-ink">
-            <CalendarDays size={18} className="text-brand" />
+          <h2 className="flex items-center gap-2 font-display text-[15px] font-bold text-ink">
+            <CalendarDays size={17} className="text-ink-3" />
             This month
           </h2>
-          <p className="text-[13px] text-ink-mute">Due dates for this calendar month</p>
+          <p className="mt-0.5 text-[12px] text-ink-3">Due dates in the current month</p>
         </div>
         <div className="text-right">
-          <p className="font-display text-base font-bold text-ink tnum">
-            {rupee(model.dueThisMonthRemaining)}
-          </p>
-          <p className="text-[12px] text-ink-mute">still to pay</p>
+          <p className="num text-[15px] font-bold text-ink">{rupee(model.dueThisMonthRemaining)}</p>
+          <p className="text-[11px] text-ink-3">still to pay</p>
         </div>
       </div>
 
       <div className="mt-4">
-        <div className="mb-1 flex justify-between text-[12px] text-ink-mute">
-          <span>{rupee(model.dueThisMonthPaid)} paid</span>
-          <span className="font-semibold text-ink">{paidPct}% cleared</span>
+        <div className="mb-1 flex justify-between text-[11.5px] text-ink-3">
+          <span className="num">{rupee(model.dueThisMonthPaid)} paid</span>
+          <span className="num font-semibold text-ink">{paidPct}% cleared</span>
         </div>
         <div className="bar">
           <motion.span
             initial={{ width: 0 }}
             animate={{ width: `${paidPct}%` }}
             transition={{ duration: 0.9, ease: "easeOut" }}
-            style={{ background: "linear-gradient(90deg,#188038,#34a853)" }}
+            style={{ background: "#0a7d2c" }}
           />
         </div>
       </div>
@@ -80,7 +78,7 @@ export function UpcomingPayments({ model }: { model: Model }) {
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.04 * i }}
-              className="flex items-center gap-3 rounded-xl border border-line-soft px-3 py-2.5"
+              className="flex items-center gap-3 rounded-xl border border-line px-3 py-2.5"
             >
               <span
                 className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-[11px] font-bold text-white"
@@ -90,18 +88,18 @@ export function UpcomingPayments({ model }: { model: Model }) {
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-semibold text-ink">{it.name}</p>
-                <p className="text-[12px] text-ink-mute">{dateLabel(it.date)}</p>
+                <p className="num text-[11.5px] text-ink-3">{dateLabel(it.date)}</p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <p className="text-[13px] font-bold text-ink tnum">{rupee(it.emi)}</p>
+                <p className="num text-[13px] font-bold text-ink">{rupee(it.emi)}</p>
                 <StatusChip tone={st.tone} label={st.label} />
               </div>
             </motion.li>
           );
         })}
         {items.length === 0 && (
-          <li className="rounded-xl bg-canvas p-4 text-center text-[13px] text-ink-mute">
-            No EMIs left to pay this month 🎉
+          <li className="rounded-xl bg-paper p-4 text-center text-[13px] text-ink-3">
+            No EMIs left to pay this month
           </li>
         )}
       </ul>
